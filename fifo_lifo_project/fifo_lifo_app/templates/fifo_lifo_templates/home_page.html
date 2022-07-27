@@ -1,0 +1,38 @@
+{% extends 'fifo_lifo_templates/base.html' %}
+{% block title %}
+home_page
+{% endblock %}
+{% block body %}
+<form action="{% url 'donation' %}" method="get">
+    <div class="card" style="width: 30rem;">
+        <div class="card-header">
+            <h5>Регистрация прошения</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" type='submit'>Попросить</button>
+            </div>
+        </div>
+    </div>
+</form>
+<br>
+<br>
+<form action="{% url 'donate' %}" method="post">
+    {% csrf_token %}
+    <div class="card" style="width: 30rem;">
+        <div class="card-header">
+            <h5>Регистрация пожертвования</h5>
+        </div>
+        <div class="card-body">
+            <label for="id_name" class="form-label">Что жертвуете?</label>
+            <input type="text" name="name" class="form-control" required id="id_name">
+            <p style="margin-top: 15px"><label for="id_amount" class="form-label">Сколько?</label>
+                <input type='number' name="amount" class="form-control" id="id_amount"></p>
+            <br>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" type='submit'>Пожертвовать</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
