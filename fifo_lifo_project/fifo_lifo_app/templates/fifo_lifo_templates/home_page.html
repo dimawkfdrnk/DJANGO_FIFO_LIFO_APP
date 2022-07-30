@@ -3,7 +3,8 @@
 home_page
 {% endblock %}
 {% block body %}
-<form action="{% url 'donation' %}" method="get">
+<form action="{% url 'donation' %}" method="POST">
+    {% csrf_token %}
     <div class="card" style="width: 30rem;">
         <div class="card-header">
             <h5>Регистрация прошения</h5>

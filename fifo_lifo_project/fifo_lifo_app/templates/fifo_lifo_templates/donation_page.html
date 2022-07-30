@@ -6,7 +6,13 @@ donation
 <form action="{% url 'index' %}" method="get">
     <div class="card" style="width: 30rem;">
         <div class="card-header">
-            <h5>{{ stock }}</h5>
+            {% if donation_item %}
+                {% for item in donation_item %}
+                    <h5>Вот вам {{ item.name }} 1 шт</h5>
+                {% endfor %}
+            {% else %}
+                    <h5>Склад пуст, зайдите позже</h5>
+            {% endif %}
         </div>
         <div class="card-body">
             <div class="d-grid gap-2">
