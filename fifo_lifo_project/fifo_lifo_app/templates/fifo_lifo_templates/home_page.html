@@ -25,13 +25,11 @@ home_page
             <h5>Регистрация пожертвования</h5>
         </div>
         <div class="card-body">
-            <label for="id_name" class="form-label">Что жертвуете?</label>
-            <input type="text" name="name" class="form-control" required id="id_name">
-            <p style="margin-top: 15px"><label for="id_amount" class="form-label">Сколько?</label>
-                <input type='number' name="amount" class="form-control" id="id_amount"></p>
-            <br>
-            <div class="d-grid gap-2">
-                <button class="btn btn-primary" type='submit'>Пожертвовать</button>
+            <div class="form-group">
+                {{form.as_p}}
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" type='submit'>Пожертвовать</button>
+                </div>
             </div>
         </div>
     </div>
