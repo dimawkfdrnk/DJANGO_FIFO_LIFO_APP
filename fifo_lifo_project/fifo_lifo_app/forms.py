@@ -1,24 +1,17 @@
 from  django import forms
-from django.forms import ModelForm
-from .models import Donation, Stocks
 
+from .models import Donation
 
-
-class DonationForm(forms.Form):
-    stock = forms.ModelChoiceField(
-        queryset=Stocks.objects.all(),
-        label= "Пункт приема",
-        widget=forms.Select(attrs={"class": "form-control"})
-    )
-    name = forms.CharField(
-        max_length=30,
-        label= "Что жертвуете?",
-        widget=forms.TextInput(attrs={"class": "form-control"})
-    )
-    amount = forms.IntegerField(
-        label= "Сколько?",
-        widget=forms.NumberInput(attrs={"class": "form-control"})
-    )
+class DonationForm(forms.ModelForm):
+    class Meta:
+        model = Donation
+        fields = ["stock", "name", "amount", "full_name_donator"]
+        widgets = {
+            "stock": forms.Select(attrs={"class": "form-control"}),
+            "full_name_donator": forms.TextInput(attrs={"class": "form-control"}),
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "amount": forms.NumberInput(attrs={"class": "form-control"})
+        }
 
 
 

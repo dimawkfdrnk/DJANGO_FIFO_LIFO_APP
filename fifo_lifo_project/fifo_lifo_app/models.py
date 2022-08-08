@@ -9,9 +9,10 @@ class Stocks(models.Model):
 
 
 class Donation(models.Model):
-    stock = models.ForeignKey(Stocks, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
-    amount = models.IntegerField()
+    stock = models.ForeignKey(Stocks, on_delete=models.CASCADE, verbose_name="Выберите склад:")
+    name = models.CharField(max_length=30, verbose_name="Что желаете пожертвовать?")
+    amount = models.IntegerField(verbose_name="Какое количество?")
+    full_name_donator = models.CharField(max_length=50, verbose_name="Ваше ФИО")
     state = models.CharField(max_length=20,
                              choices=(
                                  ('available', 'available'),

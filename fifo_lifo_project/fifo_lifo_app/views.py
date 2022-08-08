@@ -6,8 +6,10 @@ from .models import Donation
 
 def index(request):
     if request.session.has_key('donate'):
-        stock_id = request.session['donate']
-        form = DonationForm(initial={'stock': stock_id})
+        session_data = request.session['donate']
+        form = DonationForm(initial={
+            'stock': session_data['stock_id'],
+            'full_name_donator': session_data['full_name']})
     else:
         form = DonationForm()
     return render(request, 'fifo_lifo_templates/home_page.html', {"form": form})
@@ -30,5 +32,8 @@ def donate(request):
         form = DonationForm(request.POST)
         if form.is_valid():
             data_for_session = Donation.objects.create(**form.cleaned_data)
-            request.session['donate'] = data_for_session.stock.id
+            request.session['donate'] = {
+                "stock_id": data_for_session.stock.id,
+                "full_name": data_for_session.full_name_donator
+            }
     return render(request, 'fifo_lifo_templates/donate_page.html')
