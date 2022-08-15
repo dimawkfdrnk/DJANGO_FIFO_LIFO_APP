@@ -1,18 +1,21 @@
 from django.shortcuts import render
-
+from django.db.models import F
 from .forms import DonationForm
-from .models import Donation
+from .models import Donation, Stocks
 
 
 def index(request):
+
     if request.session.has_key('donate'):
         session_data = request.session['donate']
         form = DonationForm(initial={
             'stock': session_data['stock_id'],
-            'full_name_donator': session_data['full_name']})
+            'full_name_donator': session_data['full_name'],
+        })
     else:
         form = DonationForm()
-    return render(request, 'fifo_lifo_templates/home_page.html', {"form": form})
+
+    return render(request, 'fifo_lifo_templates/home_page.html', {"form": form,})
 
 
 def donation(request):
@@ -20,10 +23,14 @@ def donation(request):
     method = "lifo"
     if method == "fifo" and donation_item:
         donation_item = donation_item.latest("id")
-        Donation.objects.filter(id=donation_item.id).update(state="booked")
+        donation_item.state = "booked"
+        donation_item.save()
+
     elif method == "lifo" and donation_item:
         donation_item = donation_item.first()
-        Donation.objects.filter(id=donation_item.id).update(state="booked")
+        donation_item.state = "booked"
+        donation_item.save()
+
     return render(request, 'fifo_lifo_templates/donation_page.html', {'donation_item': donation_item})
 
 
@@ -37,3 +44,5 @@ def donate(request):
                 "full_name": data_for_session.full_name_donator
             }
     return render(request, 'fifo_lifo_templates/donate_page.html')
+
+

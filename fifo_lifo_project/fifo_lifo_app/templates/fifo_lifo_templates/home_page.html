@@ -18,7 +18,7 @@ home_page
 </form>
 <br>
 <br>
-<form action="{% url 'donate' %}" method="post">
+<form action="{% url 'donate' %}" method="POST">
     {% csrf_token %}
     <div class="card" style="width: 30rem;">
         <div class="card-header">
@@ -28,7 +28,7 @@ home_page
             <div class="form-group">
                 {{form.as_p}}
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary" type='submit'>Пожертвовать</button>
+                    <button {% if lol%} disabled {%endif%}  class="btn btn-primary" type='submit'>Пожертвовать</button>
                 </div>
             </div>
         </div>
