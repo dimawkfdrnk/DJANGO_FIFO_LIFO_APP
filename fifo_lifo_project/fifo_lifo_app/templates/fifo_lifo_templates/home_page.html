@@ -3,7 +3,7 @@
 home_page
 {% endblock %}
 {% block body %}
-<form action="{% url 'donation' %}" method="POST">
+<form action="{% url 'help_request' %}" method="POST">
     {% csrf_token %}
     <div class="card" style="width: 30rem;">
         <div class="card-header">
@@ -11,28 +11,27 @@ home_page
         </div>
         <div class="card-body">
             <div class="d-grid gap-2">
+                <label for="id_amount_thing_help">Сколько вещей вам необходимо?</label>
+                <input type="number" name="amount_thing" class="form-control" id="id_amount_thing_help">
+                <br>
                 <button class="btn btn-primary" type='submit'>Попросить</button>
             </div>
         </div>
     </div>
 </form>
 <br>
-<br>
-<form action="{% url 'donate' %}" method="POST">
+<form action="{% url 'donation' %}" method="POST">
     {% csrf_token %}
     <div class="card" style="width: 30rem;">
         <div class="card-header">
             <h5>Регистрация пожертвования</h5>
         </div>
         <div class="card-body">
-            <div class="form-group">
-                <div class="form-group">
-                </div>
-                {{form.as_p}}
+            <div class="d-grid gap-2">
+                <label for="id_amount_thing_donation">Сколько вещей желаете пожертвовать?</label>
+                <input type="number" name="amount_thing" class="form-control" id="id_amount_thing_donation">
                 <br>
-                <div class="d-grid gap-2">
-                    <button {% if lol %} disabled {% endif %} class="btn btn-primary" type='submit'>Пожертвовать</button>
-                </div>
+                <button class="btn btn-primary" type='submit'>Пожертвовать</button>
             </div>
         </div>
     </div>

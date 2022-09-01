@@ -1,0 +1,32 @@
+{% extends 'fifo_lifo_templates/base.html' %}
+{% block title %}
+donation
+{% endblock %}
+{% block body %}
+<form action="{% url 'donation_things' %}" method="POST" id="form2">
+    {% csrf_token %}
+    <div class="card" style="width: 30rem;">
+        <div class="card-header">
+            <h5>Укажите название вещей для пожертвования</h5>
+        </div>
+        <div class="card-body">
+            <div>
+                {% with ''|center:amount_thing as range %}
+                {% for _ in range %}
+                <p>
+                    <label for="id_name_thing">Вещь {{forloop.counter}} </label>
+                    <input type="text" name="name{{ forloop.counter0 }}" class="form-control" id="id_name_thing">
+                </p>
+                {% endfor %}
+                {% endwith %}
+                <label for="id_full_name_donator">Укажите ваши ФИО</label>
+                <input type="text" name="full_name_donator" class="form-control" id="id_full_name_donator">
+                <input type="hidden" name="amount_thing" id="amount" value="{{amount_thing}}"><br>
+                <div class="d-grid gap-2">
+                    <button form="form2" class="btn btn-primary" type='submit'>Пожертвовать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
