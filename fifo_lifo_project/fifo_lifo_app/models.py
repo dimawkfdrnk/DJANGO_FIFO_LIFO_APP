@@ -52,7 +52,7 @@ class RequestItem(ItemDescription):
 
 
 class ManagerHelpRequest(models.Manager):
-    def get_close_request(self):
+    def get_queryset(self):
         return super().get_queryset().filter(status='Close')
 
 
