@@ -3,7 +3,7 @@
 donation
 {% endblock %}
 {% block body %}
-<form action="{% url 'request_things' %}" method="POST" id="form1">
+<form action="{% url 'request_item' %}" method="POST" id="form1">
     {% csrf_token %}
     <div class="card" style="width: 30rem;">
         <div class="card-header">
@@ -11,17 +11,17 @@ donation
         </div>
         <div class="card-body">
             <div>
-                {% with ''|center:amount_thing as range %}
+                {% with ''|center:amount_items as range %}
                 {% for _ in range %}
                 <p>
-                    <label for="id_name_thing">Вещь {{forloop.counter}} </label>
-                    <input type="text" name="name{{ forloop.counter0 }}" class="form-control" id="id_name_thing">
+                    <label for="id_name_item">Вещь {{forloop.counter}} </label>
+                    <input type="text" name="name{{ forloop.counter0 }}" class="form-control" id="id_name_item">
                 </p>
                 {% endfor %}
                 {% endwith %}
                 <label for="id_full_name_petitioner">Укажите ваши ФИО</label>
                 <input type="text" name="full_name_petitioner" class="form-control" id="id_full_name_petitioner">
-                <input type="hidden" name="amount_thing" id="amount" value="{{amount_thing}}"><br>
+                <input type="hidden" name="amount_items" id="id_amount_items" value="{{amount_items}}"><br>
                 <div class="d-grid gap-2">
                     <button form="form1" class="btn btn-primary" type='submit'>Оставить заявку</button>
                 </div>

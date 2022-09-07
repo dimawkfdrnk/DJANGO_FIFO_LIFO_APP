@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse
 from django.db.models import F
 # from .forms import DonationForm
-from .models import DonationItem,HelpRequest,RequestItem,Donation
+from .models import DonationItem,HelpRequest,RequestItem,Donation, CompletedRequest, ManagerHelpRequest
 from django.db import transaction
 
 
@@ -11,33 +11,34 @@ def index(request):
 
 def help_request(request):
     if request.method == "POST":
-        amount_thing = int(request.POST['amount_thing'])
-    return render(request, 'fifo_lifo_templates/help_request.html', {"amount_thing": amount_thing})
+        amount_items = int(request.POST['amount_items'])
+    return render(request, 'fifo_lifo_templates/help_request.html', {"amount_items": amount_items})
 
 
 @transaction.atomic()
-def request_things(request):
+def request_item(request):
     if request.method == "POST":
         data = request.POST
-        request_id = HelpRequest.objects.create(full_name_petitioner=request.POST['full_name_petitioner'])
-        for number in range(int(data['amount_thing'])):
-            RequestItem.objects.create(name_item=data[f"name{number}"], request_id=request_id)
+        request_object = HelpRequest.objects.create(full_name_petitioner=request.POST['full_name_petitioner'])
+        for number in range(int(data['amount_items'])):
+            RequestItem.objects.create(name_item=data[f"name{number}"], request_id=request_object.id)
+
     return render(request, 'fifo_lifo_templates/home_page.html')
 
 
 def donation(request):
     if request.method == "POST":
-        amount_thing = int(request.POST['amount_thing'])
-    return render(request, 'fifo_lifo_templates/donation.html', {"amount_thing": amount_thing})
+        amount_items = int(request.POST['amount_items'])
+    return render(request, 'fifo_lifo_templates/donation.html', {"amount_items": amount_items})
 
 
 @transaction.atomic()
-def donation_things(request):
+def donation_item(request):
     if request.method == "POST":
         data = request.POST
-        donation_id = Donation.objects.create(full_name_donator=request.POST['full_name_donator'])
-        for number in range(int(data['amount_thing'])):
-            DonationItem.objects.create(name_item=data[f"name{number}"], donation_id=donation_id)
+        donation_object = Donation.objects.create(full_name_donator=request.POST['full_name_donator'])
+        for number in range(int(data['amount_items'])):
+            DonationItem.objects.create(name_item=data[f"name{number}"], donation_id=donation_object.id)
     return render(request, 'fifo_lifo_templates/home_page.html')
 
 
