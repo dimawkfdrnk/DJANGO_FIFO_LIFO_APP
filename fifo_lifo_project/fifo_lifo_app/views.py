@@ -12,7 +12,7 @@ def index(request):
 def help_request(request):
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
-    return render(request, 'fifo_lifo_templates/help_request.html', {"amount_items": amount_items})
+    return render(request, 'fifo_lifo_templates/request_item.html', {"amount_items": amount_items})
 
 
 @transaction.atomic()
@@ -42,7 +42,7 @@ def request_item(request):
 def donation(request):
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
-    return render(request, 'fifo_lifo_templates/donation.html', {"amount_items": amount_items})
+    return render(request, 'fifo_lifo_templates/donation_item.html', {"amount_items": amount_items})
 
 
 @transaction.atomic()
@@ -83,7 +83,7 @@ def donation_item(request):
 #         donation_item = donation_item.first()
 #         donation_item.state = "booked"
 #         donation_item.save()
-#     return render(request, 'fifo_lifo_templates/help_request.html', {'donation_item': donation_item})
+#     return render(request, 'fifo_lifo_templates/request_item.html', {'donation_item': donation_item})
 #
 # @transaction.atomic()
 # def donate(request):
@@ -96,6 +96,6 @@ def donation_item(request):
 #                 "full_name": data_for_session.full_name_donator
 #             }
 #
-#     return render(request, 'fifo_lifo_templates/donation.html')
+#     return render(request, 'fifo_lifo_templates/donation_item.html')
 
 
