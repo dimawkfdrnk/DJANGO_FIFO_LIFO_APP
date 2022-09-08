@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse
-from django.db.models import F
+# from django.db.models import F
 # from .forms import DonationForm
-from .models import DonationItem,HelpRequest,RequestItem,Donation, CompletedRequest, ManagerHelpRequest
+from .models import DonationItem, HelpRequest, RequestItem, Donation, CompletedRequest
 from django.db import transaction
 
 
@@ -21,9 +21,22 @@ def request_item(request):
         data = request.POST
         request_object = HelpRequest.objects.create(full_name_petitioner=request.POST['full_name_petitioner'])
         for number in range(int(data['amount_items'])):
-            RequestItem.objects.create(name_item=data[f"name{number}"], request_id=request_object.id)
+            request_item = RequestItem.objects.create(name_item=data[f"name{number}"], request_id=request_object.id)
+            donation_item = DonationItem.objects.filter(name_item=request_item.name_item).last()
+            if donation_item:
+                request_item.status = 'Close'
+                request_item.save()
+                donation_item.status = 'Issued'
+                donation_item.save()
+        help_request_check = RequestItem.objects.filter(request_id=request_object.id, status='Open')
+        if not help_request_check:
+            request_object.status = 'Close'
+            request_object.save()
 
-    return render(request, 'fifo_lifo_templates/home_page.html')
+    context = {
+        's': donation_item
+    }
+    return render(request, 'fifo_lifo_templates/home_page.html', context)
 
 
 def donation(request):
@@ -40,8 +53,6 @@ def donation_item(request):
         for number in range(int(data['amount_items'])):
             DonationItem.objects.create(name_item=data[f"name{number}"], donation_id=donation_object.id)
     return render(request, 'fifo_lifo_templates/home_page.html')
-
-
 
 
 

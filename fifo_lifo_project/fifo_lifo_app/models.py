@@ -34,7 +34,7 @@ class Donation(models.Model):
 class ItemDescription(models.Model):
     name_item = models.CharField(max_length=50)
     # amount = models.IntegerField(null=True, default=0)
-    # status = models.CharField(max_length=30)
+
 
     class Meta:
         abstract = True
@@ -42,13 +42,12 @@ class ItemDescription(models.Model):
 
 class DonationItem(ItemDescription):
     donation = models.ForeignKey(Donation, on_delete=models.CASCADE, null=True)
-    status = models.CharField(max_length=15, choices=(('Free', 'Free'), ('Given_away', 'Given_away')), default='Free')
+    status = models.CharField(max_length=15, choices=(('Free', 'Free'), ('Issued', 'Issued')), default='Free')
 
 
 class RequestItem(ItemDescription):
     request = models.ForeignKey(HelpRequest, on_delete=models.CASCADE, null=True)
-    status = models.CharField(max_length=15, choices=(('Expects', 'Expects'), ('Received', 'Received')), default='Free')
-
+    status = models.CharField(max_length=15, choices=(('Open', 'Open'), ('Close', 'Close')), default='Open')
 
 
 class ManagerHelpRequest(models.Manager):
@@ -65,14 +64,7 @@ class CompletedRequest(HelpRequest):
 
 
 
-
-
 # @receiver(post_save, sender=Donation)
 # def func(sender, instance, **kwargs):
 #     c = sender.objects.filter(stock_id=instance.stock_id, state="available")
 #     Stocks.objects.select_for_update().filter(id=instance.stock_id).update(occupied_places=c.aggregate(Sum('amount'))['amount__sum'])
-
-
-
-
-
