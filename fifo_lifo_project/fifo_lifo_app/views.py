@@ -17,12 +17,15 @@ def help_request(request):
 
 @transaction.atomic()
 def request_item(request):
+    context = { 'answer':{}
+    }
     if request.method == "POST":
         data = request.POST
         request_object = HelpRequest.objects.create(full_name_petitioner=request.POST['full_name_petitioner'])
         for number in range(int(data['amount_items'])):
             request_item = RequestItem.objects.create(name_item=data[f"name{number}"], request_id=request_object.id)
-            donation_item = DonationItem.objects.filter(name_item=request_item.name_item).last()
+            donation_item = DonationItem.objects.filter(name_item=request_item.name_item, status='Free').last()
+            context['answer'][request_item.name_item] = donation_item
             if donation_item:
                 request_item.status = 'Close'
                 request_item.save()
@@ -33,10 +36,12 @@ def request_item(request):
             request_object.status = 'Close'
             request_object.save()
 
-    context = {
-        's': donation_item
-    }
-    return render(request, 'fifo_lifo_templates/home_page.html', context)
+    print(context)
+
+    return render(request, 'fifo_lifo_templates/end_registration.html', context)
+
+def end_registration(request):
+    return render(request, 'fifo_lifo_templates/home_page.html')
 
 
 def donation(request):
@@ -57,7 +62,6 @@ def donation_item(request):
 
 
 
-
 # def index(request):
 #     if request.session.has_key('donate'):
 #         session_data = request.session['donate']
@@ -69,22 +73,8 @@ def donation_item(request):
 #         form = DonationForm()
 #
 #     return render(request, 'fifo_lifo_templates/home_page.html', {"form": form})
-#
-# @transaction.atomic()
-# def donation(request):
-#     donation_item = Donation.objects.select_for_update().exclude(state="booked")
-#     method = "lifo"
-#     if method == "fifo" and donation_item:
-#         donation_item = donation_item.latest("id")
-#         donation_item.state = "booked"
-#         donation_item.save()
-#
-#     elif method == "lifo" and donation_item:
-#         donation_item = donation_item.first()
-#         donation_item.state = "booked"
-#         donation_item.save()
-#     return render(request, 'fifo_lifo_templates/request_item.html', {'donation_item': donation_item})
-#
+
+
 # @transaction.atomic()
 # def donate(request):
 #     if request.method == "POST":
@@ -98,4 +88,5 @@ def donation_item(request):
 #
 #     return render(request, 'fifo_lifo_templates/donation_item.html')
 
+s = {'a':1}
 

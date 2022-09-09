@@ -26,9 +26,11 @@ class HelpRequest(models.Model):
     # stock_id = models.ForeignKey(Stocks, on_delete=models.CASCADE, null=True)
 
 
+
 class Donation(models.Model):
     full_name_donator = models.CharField(max_length=50)
     # stock_id = models.ForeignKey(Stocks, on_delete=models.CASCADE, null=True)
+
 
 
 class ItemDescription(models.Model):
@@ -38,6 +40,7 @@ class ItemDescription(models.Model):
 
     class Meta:
         abstract = True
+
 
 
 class DonationItem(ItemDescription):
