@@ -19,9 +19,15 @@ donation
                 </p>
                 {% endfor %}
                 {% endwith %}
-                <label for="id_full_name_donator">Укажите ваши ФИО</label>
-                <input type="text" name="full_name_donator" class="form-control" id="id_full_name_donator">
-                <input type="hidden" name="amount_items" id="id_amount_items" value="{{amount_items}}"><br>
+                <input type="hidden" name="amount_items" id="id_amount_items" value="{{amount_items}}">
+
+                <label for="id_stock">Выберите склад:</label>
+                <p><select class="form-select" id="id_stock" name="id_stock">
+                    {% for i in stock %}
+                    <option>{{i.id}}</option>
+                    {% endfor %}
+                </select></p>
+                <br>
                 <div class="d-grid gap-2">
                     <button form="form2" class="btn btn-primary" type='submit'>Пожертвовать</button>
                 </div>

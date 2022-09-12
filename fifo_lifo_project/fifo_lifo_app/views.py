@@ -1,8 +1,6 @@
-from django.shortcuts import render, HttpResponse
-# from django.db.models import F
-# from .forms import DonationForm
-from .models import DonationItem, HelpRequest, RequestItem, Donation, CompletedRequest
 from django.db import transaction
+from django.shortcuts import render
+from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
 
 
 def index(request):
@@ -12,33 +10,41 @@ def index(request):
 def help_request(request):
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
-    return render(request, 'fifo_lifo_templates/request_item.html', {"amount_items": amount_items})
+    return render(request, 'fifo_lifo_templates/request_item.html',
+                  {"amount_items": amount_items, 'stock': Stocks.objects.all()})
 
 
 @transaction.atomic()
 def request_item(request):
-    context = { 'answer':{}
+    context = {
+        'answer': {}
+
     }
     if request.method == "POST":
         data = request.POST
-        request_object = HelpRequest.objects.create(full_name_petitioner=request.POST['full_name_petitioner'])
+        request_object = HelpRequest.objects.create()
         for number in range(int(data['amount_items'])):
-            request_item = RequestItem.objects.create(name_item=data[f"name{number}"], request_id=request_object.id)
-            donation_item = DonationItem.objects.filter(name_item=request_item.name_item, status='Free').last()
+            request_item = RequestItem.objects.create(
+                name_item=data[f"name{number}"],
+                request_id=request_object.id,
+                stock_id=request.POST['id_stock'])
+            donation_item = DonationItem.objects.filter(
+                name_item=request_item.name_item,
+                status='Free',
+                stock_id=request.POST['id_stock']).last()
             context['answer'][request_item.name_item] = donation_item
             if donation_item:
                 request_item.status = 'Close'
-                request_item.save()
                 donation_item.status = 'Issued'
+                request_item.save()
                 donation_item.save()
         help_request_check = RequestItem.objects.filter(request_id=request_object.id, status='Open')
         if not help_request_check:
             request_object.status = 'Close'
             request_object.save()
 
-    print(context)
-
     return render(request, 'fifo_lifo_templates/end_registration.html', context)
+
 
 def end_registration(request):
     return render(request, 'fifo_lifo_templates/home_page.html')
@@ -47,46 +53,20 @@ def end_registration(request):
 def donation(request):
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
-    return render(request, 'fifo_lifo_templates/donation_item.html', {"amount_items": amount_items})
+    return render(request, 'fifo_lifo_templates/donation_item.html', {
+        "amount_items": amount_items,
+        'stock': Stocks.objects.all()})
 
 
 @transaction.atomic()
 def donation_item(request):
     if request.method == "POST":
         data = request.POST
-        donation_object = Donation.objects.create(full_name_donator=request.POST['full_name_donator'])
+        donation_object = Donation.objects.create()
         for number in range(int(data['amount_items'])):
-            DonationItem.objects.create(name_item=data[f"name{number}"], donation_id=donation_object.id)
+            DonationItem.objects.create(
+                name_item=data[f"name{number}"],
+                donation_id=donation_object.id,
+                stock_id=request.POST['id_stock']
+            )
     return render(request, 'fifo_lifo_templates/home_page.html')
-
-
-
-
-# def index(request):
-#     if request.session.has_key('donate'):
-#         session_data = request.session['donate']
-#         form = DonationForm(initial={
-#             'stock': session_data['stock_id'],
-#             'full_name_donator': session_data['full_name'],
-#         })
-#     else:
-#         form = DonationForm()
-#
-#     return render(request, 'fifo_lifo_templates/home_page.html', {"form": form})
-
-
-# @transaction.atomic()
-# def donate(request):
-#     if request.method == "POST":
-#         form = DonationForm(request.POST)
-#         if form.is_valid():
-#             data_for_session = Donation.objects.create(**form.cleaned_data)
-#             request.session['donate'] = {
-#                 "stock_id": data_for_session.stock.id,
-#                 "full_name": data_for_session.full_name_donator
-#             }
-#
-#     return render(request, 'fifo_lifo_templates/donation_item.html')
-
-s = {'a':1}
-
