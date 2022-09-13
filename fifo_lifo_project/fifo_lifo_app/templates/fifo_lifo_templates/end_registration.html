@@ -3,25 +3,25 @@
 home_page
 {% endblock %}
 {% block body %}
-<form action="{% url 'index' %}" method="GET">
-    <div class="card" style="width: 30rem;">
-        <div class="card-header">
-            <h5>Ваши вещи:</h5>
-        </div>
-        <div class="card-body">
-            {% for key, value in answer.items %}
+<div class="card" style="width: 30rem;">
+    <div class="card-header">
+        <h5>Ваши вещи:</h5>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'index' %}" method="GET">
+            <div class="d-grid gap-0">
+                {% for key, value in answer.items %}
                 {% if value != None %}
-                    <div>Получите: {{key}}</div>
+                <div>Получите: {{key}}</div>
                 {% endif %}
                 {% if value == None %}
-                    <div>{{key}} - нет на складе</div>
+                <div>{{key}} - нет на складе</div>
                 {% endif %}
-            {% endfor %}
-            <br>
-            <div class="d-grid gap-2">
+                {% endfor %}
+                <br>
                 <button class="btn btn-primary" type='submit'>Завершить</button>
             </div>
-        </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}

@@ -3,37 +3,38 @@
 home_page
 {% endblock %}
 {% block body %}
-<form action="{% url 'help_request' %}" method="POST">
-    {% csrf_token %}
-    <div class="card" style="width: 30rem;">
-        <div class="card-header">
-            <h5>Регистрация прошения</h5>
-        </div>
-        <div class="card-body">
+<div class="card" style="width: 30rem;">
+    <div class="card-header">
+        <h5>Регистрация прошения</h5>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'help_request' %}" method="POST">
             <div class="d-grid gap-2">
+                {% csrf_token %}
                 <label for="id_amount_item_help">Сколько вещей вам необходимо?</label>
                 <input type="number" name="amount_items" class="form-control" id="id_amount_item_help">
                 <br>
                 <button class="btn btn-primary" type='submit'>Попросить</button>
             </div>
-        </div>
+        </form>
     </div>
-</form>
+</div>
 <br>
-<form action="{% url 'donation' %}" method="POST">
-    {% csrf_token %}
-    <div class="card" style="width: 30rem;">
-        <div class="card-header">
-            <h5>Регистрация пожертвования</h5>
-        </div>
-        <div class="card-body">
+<br>
+<div class="card" style="width: 30rem;">
+    <div class="card-header">
+        <h5>Регистрация пожертвования</h5>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'donation' %}" method="POST">
             <div class="d-grid gap-2">
+                {% csrf_token %}
                 <label for="id_amount_item_donation">Сколько вещей желаете пожертвовать?</label>
                 <input type="number" name="amount_items" class="form-control" id="id_amount_item_donation">
                 <br>
                 <button class="btn btn-primary" type='submit'>Пожертвовать</button>
             </div>
-        </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}
