@@ -39,13 +39,13 @@ def request_item(request):
                 name_item=request_item.name_item,
                 status='Free',
                 stock_id=request.POST['id_stock']).last()
+            context['answer'][request_item.name_item] = donation_item
 
             if donation_item:
                 request_item.status = 'Close'
                 donation_item.status = 'Issued'
                 request_item.save()
                 donation_item.save()
-                context['answer'][request_item.name_item] = donation_item
 
         help_request_check = RequestItem.objects.filter(request_id=request_object.id, status='Open')
         if not help_request_check:
