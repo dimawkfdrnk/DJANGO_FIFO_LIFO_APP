@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.shortcuts import render
-from  .forms import DonationForm, DonationFormSet
+from  .forms import DonationForm
 from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
 from django.forms import formset_factory
 
@@ -65,22 +65,25 @@ def donation(request):
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
 
+    formset = DonationForm().formset_func(amount_items)
+
     context = {
         "amount_items": amount_items,
-        'formset': []
+        'formset': formset
     }
-
-    formset = DonationFormSet()
-    for i in range(amount_items):
-        context['formset'].append(formset[i])
 
     return render(request, 'fifo_lifo_templates/donation_item.html', context)
 
 
 @transaction.atomic()
 def donation_item(request):
+    s = DonationForm().formset_func()
+
     if request.method == "POST":
-        f = DonationForm(request.POST)
+        f = s(request.POST)
+
         print(f.is_valid())
+        # print(request.POST)
+        # print(f)
 
     return render(request, 'fifo_lifo_templates/home_page.html')

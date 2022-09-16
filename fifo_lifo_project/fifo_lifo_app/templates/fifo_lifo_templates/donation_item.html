@@ -11,16 +11,7 @@ donation
         <form action="{% url 'donation_item' %}" method="POST">
             <div class="d-grid gap-3">
                 {% csrf_token %}
-                 <div>
-                    <label> Вещь {{forloop.counter}}</label>
-                    {{formset.0.stock}}
-                </div>
-                {% for form in formset %}
-                <div>
-                    <label> Вещь {{forloop.counter}}</label>
-                    {{form.name_item}}
-                </div>
-                {% endfor %}
+                {{formset}}
                 <input type="hidden" name="amount_items" value="{{amount_items}}">
                 <br>
                 <button class="btn btn-primary" {% if disabled_button %} disabled {% endif %} type='submit'>
