@@ -1,7 +1,8 @@
 from django.db import transaction
 from django.shortcuts import render
-
+from  .forms import DonationForm, DonationFormSet
 from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
+from django.forms import formset_factory
 
 
 def index(request):
@@ -60,23 +61,18 @@ def end_registration(request):
 
 
 def donation(request):
+
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
-        id_stock = None
-        disabled_button  = False
-        if 'id_stock' in request.POST:
-            id_stock = request.POST['id_stock']
-        stock = Stocks.objects.filter(id=id_stock)
-        for i in stock:
-            if i.occupied_places >= i.vacancies:
-                disabled_button = True
 
     context = {
         "amount_items": amount_items,
-        'stocks': Stocks.objects.all(),
-        'id_stock': id_stock,
-        'disabled_button': disabled_button
+        'formset': []
     }
+
+    formset = DonationFormSet()
+    for i in range(amount_items):
+        context['formset'].append(formset[i])
 
     return render(request, 'fifo_lifo_templates/donation_item.html', context)
 
@@ -84,15 +80,7 @@ def donation(request):
 @transaction.atomic()
 def donation_item(request):
     if request.method == "POST":
-        data = request.POST
-        # print(data)
-        donation_object = Donation.objects.create()
-
-        for number in range(int(data['amount_items'])):
-            DonationItem.objects.create(
-                name_item=data[f"name{number}"],
-                donation_id=donation_object.id,
-                stock_id=request.POST['id_stock']
-            )
+        f = DonationForm(request.POST)
+        print(f.is_valid())
 
     return render(request, 'fifo_lifo_templates/home_page.html')

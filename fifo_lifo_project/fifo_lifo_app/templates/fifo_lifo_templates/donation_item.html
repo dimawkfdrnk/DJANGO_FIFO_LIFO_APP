@@ -8,33 +8,23 @@ donation
         <h5>Укажите название вещей для пожертвования</h5>
     </div>
     <div class="card-body">
-        <form action="{% url 'donation' %}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="amount_items" value="{{amount_items}}">
-            <label for="id_stock">Выберите склад:</label>
-            <p><select class="form-select" id="id_stock" name="id_stock" aria-label="Default select example"
-                       onChange="form.submit();">
-                <option selected>{{id_stock}}</option>
-                {% for stock in stocks %}
-                <option>{{stock.id}}</option>
-                {% endfor %}
-            </select></p>
-        </form>
-        <form action="{% url 'donation_item' %}" method="POST" id="form2">
-            <div class="d-grid gap-0">
+        <form action="{% url 'donation_item' %}" method="POST">
+            <div class="d-grid gap-3">
                 {% csrf_token %}
-                {% with ''|center:amount_items as range %}
-                {% for _ in range %}
-                <p>
-                    <label for="id_name_item">Вещь {{forloop.counter}} </label>
-                    <input type="text" name="name{{ forloop.counter0 }}" class="form-control" id="id_name_item">
-                </p>
+                 <div>
+                    <label> Вещь {{forloop.counter}}</label>
+                    {{formset.0.stock}}
+                </div>
+                {% for form in formset %}
+                <div>
+                    <label> Вещь {{forloop.counter}}</label>
+                    {{form.name_item}}
+                </div>
                 {% endfor %}
-                {% endwith %}
                 <input type="hidden" name="amount_items" value="{{amount_items}}">
-                <input type="hidden" name="id_stock" value="{{id_stock}}">
                 <br>
-                <button class="btn btn-primary" {% if disabled_button %} disabled {% endif %} type='submit'> Пожертвовать
+                <button class="btn btn-primary" {% if disabled_button %} disabled {% endif %} type='submit'>
+                    Пожертвовать
                 </button>
             </div>
         </form>
