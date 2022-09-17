@@ -1,13 +1,20 @@
 from django import forms
-from django.forms import formset_factory
 
 from .models import DonationItem, Stocks
 
 
-class DonationForm(forms.ModelForm):
-    stock = forms.ModelChoiceField(queryset=Stocks.objects.all(),
-                                   label="Выберите склад",
-                                   widget=forms.Select(attrs={"class": "form-control"}))
+class DonationFormStock(forms.ModelForm):
+    
+    class Meta:
+        model = DonationItem
+        fields = ['stock']
+
+        widgets = {
+            "stock": forms.Select(attrs={"class": "form-control", "onChange": "form.submit();"} )
+        }
+
+
+class DonationFormNameItem(forms.ModelForm):
 
     class Meta:
         model = DonationItem
@@ -16,6 +23,3 @@ class DonationForm(forms.ModelForm):
         widgets = {
             "name_item": forms.TextInput(attrs={"class": "form-control"}),
         }
-
-    def formset_func(self, max_num=None):
-        return formset_factory(DonationForm, extra=2, max_num=max_num)

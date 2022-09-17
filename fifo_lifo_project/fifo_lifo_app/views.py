@@ -1,8 +1,9 @@
 from django.db import transaction
 from django.shortcuts import render
-from  .forms import DonationForm
+from  .forms import DonationFormNameItem, DonationFormStock
 from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
 from django.forms import formset_factory
+
 
 
 def index(request):
@@ -61,15 +62,31 @@ def end_registration(request):
 
 
 def donation(request):
+    disabled_button = False
+    id_stock = None
+
+    if 'stock' in request.POST:
+        id_stock = request.POST['stock']
+        formset_stock = DonationFormStock(initial={'stock': id_stock})
+    else:
+        formset_stock = DonationFormStock()
 
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
+    DonationFormNameItemSet = formset_factory(DonationFormNameItem, extra=2, max_num=amount_items)
+    formset_name_item = DonationFormNameItemSet(prefix='name_item')
 
-    formset = DonationForm().formset_func(amount_items)
+    stock = Stocks.objects.filter(id=id_stock)
+    for i in stock:
+        if i.occupied_places >= i.vacancies:
+            disabled_button = True
 
     context = {
         "amount_items": amount_items,
-        'formset': formset
+        'formset_stock': formset_stock,
+        'formset_name_item': formset_name_item,
+        'disabled_button': disabled_button,
+        'stock': id_stock
     }
 
     return render(request, 'fifo_lifo_templates/donation_item.html', context)
@@ -77,13 +94,20 @@ def donation(request):
 
 @transaction.atomic()
 def donation_item(request):
-    s = DonationForm().formset_func()
+    DonationFormNameItemSet = formset_factory(DonationFormNameItem)
 
     if request.method == "POST":
-        f = s(request.POST)
+        stock = DonationFormStock(request.POST)
+        items = DonationFormNameItemSet(request.POST, prefix='name_item')
 
-        print(f.is_valid())
-        # print(request.POST)
-        # print(f)
+        if stock.is_valid() and items.is_valid():
+            donation = Donation.objects.create()
+
+            for name_item in items.cleaned_data:
+                DonationItem.objects.create(
+                    **stock.cleaned_data,
+                    name_item=name_item.get('name_item'),
+                    donation_id=donation.id)
 
     return render(request, 'fifo_lifo_templates/home_page.html')
+
