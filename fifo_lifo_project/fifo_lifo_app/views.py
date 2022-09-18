@@ -1,9 +1,9 @@
 from django.db import transaction
-from django.shortcuts import render
-from  .forms import DonationFormNameItem, DonationFormStock
-from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
 from django.forms import formset_factory
+from django.shortcuts import render
 
+from .forms import DonationFormNameItem, DonationFormStock, RequestItemFormStock, RequestItemFormNameItem
+from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
 
 
 def index(request):
@@ -11,11 +11,25 @@ def index(request):
 
 
 def help_request(request):
+    id_stock = None
+
+    if 'stock' in request.POST:
+        id_stock = request.POST['stock']
+        formset_stock = RequestItemFormStock(initial={'stock': id_stock})
+    else:
+        formset_stock = RequestItemFormStock()
+
     if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
+    RequestItemFormNameItemSet = formset_factory(RequestItemFormNameItem, extra=2, max_num=amount_items)
+    formset_name_item = RequestItemFormNameItemSet(prefix='name_item')
+
     context = {
         "amount_items": amount_items,
-        'stocks': Stocks.objects.all()
+        'stocks': Stocks.objects.all(),
+        'formset_name_item': formset_name_item,
+        'formset_stock': formset_stock,
+        'stock': id_stock
     }
 
     return render(request, 'fifo_lifo_templates/request_item.html', context)
@@ -23,31 +37,37 @@ def help_request(request):
 
 @transaction.atomic()
 def request_item(request):
-
     context = {
         'answer': {}
     }
 
+    RequestItemFormNameItemSet = formset_factory(RequestItemFormNameItem)
+
     if request.method == "POST":
-        data = request.POST
-        request_object = HelpRequest.objects.create()
+        stock = RequestItemFormStock(request.POST)
+        items = RequestItemFormNameItemSet(request.POST, prefix='name_item')
 
-        for number in range(int(data['amount_items'])):
-            request_item = RequestItem.objects.create(
-                name_item=data[f"name{number}"],
-                request_id=request_object.id,
-                stock_id=request.POST['id_stock'])
-            donation_item = DonationItem.objects.filter(
-                name_item=request_item.name_item,
-                status='Free',
-                stock_id=request.POST['id_stock']).last()
-            context['answer'][request_item.name_item] = donation_item
+        if stock.is_valid() and items.is_valid():
+            request_object = HelpRequest.objects.create()
 
-            if donation_item:
-                request_item.status = 'Close'
-                donation_item.status = 'Issued'
-                request_item.save()
-                donation_item.save()
+            for name_item in items.cleaned_data:
+                request_item = RequestItem.objects.create(
+                    **stock.cleaned_data,
+                    name_item=name_item.get('name_item'),
+                    request_id=request_object.id
+                )
+
+                donation_item = DonationItem.objects.filter(
+                    name_item=request_item.name_item,
+                    status='Free',
+                    stock_id=request_item.stock_id).last()
+
+                if donation_item:
+                    request_item.status = 'Close'
+                    donation_item.status = 'Issued'
+                    request_item.save()
+                    donation_item.save()
+                context['answer'][request_item.name_item] = donation_item
 
         help_request_check = RequestItem.objects.filter(request_id=request_object.id, status='Open')
         if not help_request_check:
@@ -110,4 +130,3 @@ def donation_item(request):
                     donation_id=donation.id)
 
     return render(request, 'fifo_lifo_templates/home_page.html')
-
