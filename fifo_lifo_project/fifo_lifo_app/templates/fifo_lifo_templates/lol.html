@@ -1,0 +1,26 @@
+{% extends 'fifo_lifo_templates/base.html' %}
+{% block title %}
+home_page
+{% endblock %}
+{% block body %}
+<form action="{% url 'index' %}" method="GET">
+    <div class="card" style="width: 30rem;">
+        <div class="card-header">
+            <h5>Ваши вещи:</h5>
+        </div>
+        <div class="card-body">
+            {% for i in s %}
+            {% if i %}
+            {{i.name_item}}
+            {% else %}
+            <div> Ничего нет</div>
+        {% endif %}
+        {% endfor %}
+        <br>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary" type='submit'>Завершить</button>
+        </div>
+    </div>
+    </div>
+</form>
+{% endblock %}
