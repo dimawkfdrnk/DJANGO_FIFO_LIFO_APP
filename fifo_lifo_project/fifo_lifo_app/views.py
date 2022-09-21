@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.forms import formset_factory
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.template.loader import get_template
 
 from .forms import DonationFormNameItem, DonationFormStock, RequestItemFormStock, RequestItemFormNameItem
 from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
@@ -9,18 +10,22 @@ from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
 def index(request):
     return render(request, 'fifo_lifo_templates/home_page.html')
 
+def session(request):
+    request.session['data_session'] = request.POST
+    return redirect(request.META['HTTP_REFERER'])
+
 
 def help_request(request):
     id_stock = None
 
-    if 'stock' in request.POST:
-        id_stock = request.POST['stock']
+    if request.session.has_key('data_session'):
+        id_stock = request.session['data_session']['stock']
         formset_stock = RequestItemFormStock(initial={'stock': id_stock})
+        amount_items = int(request.session['data_session']['amount_items'])
     else:
         formset_stock = RequestItemFormStock()
-
-    if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
+
     RequestItemFormNameItemSet = formset_factory(RequestItemFormNameItem, extra=2, max_num=amount_items)
     formset_name_item = RequestItemFormNameItemSet(prefix='name_item')
 
@@ -85,14 +90,14 @@ def donation(request):
     disabled_button = False
     id_stock = None
 
-    if 'stock' in request.POST:
-        id_stock = request.POST['stock']
+    if request.session.has_key('data_session'):
+        id_stock = request.session['data_session']['stock']
         formset_stock = DonationFormStock(initial={'stock': id_stock})
+        amount_items = int(request.session['data_session']['amount_items'])
     else:
         formset_stock = DonationFormStock()
-
-    if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
+
     DonationFormNameItemSet = formset_factory(DonationFormNameItem, extra=2, max_num=amount_items)
     formset_name_item = DonationFormNameItemSet(prefix='name_item')
 

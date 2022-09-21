@@ -8,7 +8,7 @@ donation
         <h5>Укажите название вещей для запроса</h5>
     </div>
     <div class="card-body">
-        <form action="{% url 'help_request' %}" method="POST">
+        <form action="{% url 'session' %}" method="POST">
             {% csrf_token %}
             <input type="hidden" name="amount_items" value="{{amount_items}}">
             {{formset_stock}}

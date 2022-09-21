@@ -8,5 +8,7 @@ urlpatterns = [
     path('request_item', views.request_item, name='request_item'),
     path('end_registration', views.end_registration, name='end_registration'),
     path('donation', views.donation, name='donation'),
-    path('donation_item', views.donation_item, name='donation_item')
+    path('donation_item', views.donation_item, name='donation_item'),
+    path('sesstion', views.session, name='session'),
+
 ]
