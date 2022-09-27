@@ -11,12 +11,12 @@ donation
         <form action="{% url 'session' %}" method="POST">
             {% csrf_token %}
             <input type="hidden" name="amount_items" value="{{amount_items}}">
-            {{formset_stock}}
+            {{formset_stock.as_p}}
         </form>
         <form action="{% url 'donation_item' %}" method="POST">
-            <div class="d-grid gap-3">
+            <div class="d-grid gap-0">
                 {% csrf_token %}
-                {{formset_name_item}}
+                {{formset_name_item.as_p}}
                 <input type="hidden" name="amount_items" value="{{amount_items}}">
                 <input type="hidden" name="stock" value="{{stock}}">
                 <br>

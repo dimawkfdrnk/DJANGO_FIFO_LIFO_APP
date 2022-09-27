@@ -1,0 +1,15 @@
+{% extends 'fifo_lifo_templates/base.html' %}
+{% block title %}
+donation
+{% endblock %}
+{% block body %}
+{% for item in results %}
+<p><h5>{{item.name_item}}</h5></p>
+{% endfor %}
+<form action="{% url 'index' %}" method="GET">
+    <div class="d-grid gap-0">
+        <br>
+        <button class="btn btn-primary" type="submit">На главную</button>
+    </div>
+</form>
+{% endblock %}

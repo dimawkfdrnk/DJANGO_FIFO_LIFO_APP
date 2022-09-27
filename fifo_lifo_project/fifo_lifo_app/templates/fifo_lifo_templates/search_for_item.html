@@ -1,0 +1,23 @@
+{% extends 'fifo_lifo_templates/base.html' %}
+{% block title %}
+donation
+{% endblock %}
+{% block body %}
+<div class="mb-5 row">
+    <form action="{% url 'session' %}" method="POST">
+        <h3>Поиск</h3>
+        <br>
+        {% csrf_token %}
+        {{formset_stock.as_p}}
+    </form>
+    <form action="{% url 'searching_results' %}" method="POST">
+        {% csrf_token %}
+        <div class="d-grid gap-0">
+            {{search_form.as_p}}
+            <br>
+            <button class="btn btn-primary" type="submit">Искать</button>
+            <input type="hidden" name="stock" value="{{stock}}">
+        </div>
+    </form>
+</div>
+{% endblock %}

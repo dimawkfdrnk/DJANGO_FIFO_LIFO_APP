@@ -2,7 +2,11 @@ from django.db import transaction
 from django.forms import formset_factory
 from django.shortcuts import render, redirect
 
-from .forms import DonationFormNameItem, DonationFormStock, RequestItemFormStock, RequestItemFormNameItem
+from .forms import \
+    DonationFormNameItem, \
+    FormStock, \
+    SearchItemForm, \
+    RequestItemFormNameItem
 from .models import DonationItem, HelpRequest, RequestItem, Donation, Stocks
 
 
@@ -15,6 +19,32 @@ def session(request):
     return redirect(request.META['HTTP_REFERER'])
 
 
+def search_for_item(request):
+    id_stock = None
+    if request.session.has_key('data_session'):
+        id_stock = request.session['data_session']['stock']
+        formset_stock = FormStock(initial={'stock': id_stock})
+    else:
+        formset_stock = FormStock()
+    search_form = SearchItemForm()
+    context = {'search_form': search_form,
+               'stocks': Stocks.objects.all(),
+               'formset_stock': formset_stock,
+               'stock': id_stock
+               }
+    return render(request, 'fifo_lifo_templates/search_for_item.html', context)
+
+
+def searching_results(request):
+    if request.method == 'POST':
+        results = DonationItem.objects.filter(name_item__icontains=request.POST['name_item'])
+        results = results.filter(category=request.POST['category'])
+        results = results.filter(stock=request.POST['stock'])
+        results = results.exclude(status='Issued')
+    context = {'results': results}
+    return render(request, 'fifo_lifo_templates/searching_results.html', context)
+
+
 def help_request(request):
     id_stock = None
     amount_items = None
@@ -24,20 +54,20 @@ def help_request(request):
     if amount_items:
         if request.session.has_key('data_session'):
             id_stock = request.session['data_session']['stock']
-            formset_stock = RequestItemFormStock(initial={'stock': id_stock})
+            formset_stock = FormStock(initial={'stock': id_stock})
         else:
-            formset_stock = RequestItemFormStock()
+            formset_stock = FormStock()
 
     elif request.session.has_key('data_session'):
         id_stock = request.session['data_session']['stock']
-        formset_stock = RequestItemFormStock(initial={'stock': id_stock})
+        formset_stock = FormStock(initial={'stock': id_stock})
         amount_items = int(request.session['data_session']['amount_items'])
 
     RequestItemFormNameItemSet = formset_factory(RequestItemFormNameItem, extra=amount_items)
     formset_name_item = RequestItemFormNameItemSet(prefix='name_item')
 
     context = {
-        "amount_items": amount_items,
+        'amount_items': amount_items,
         'stocks': Stocks.objects.all(),
         'formset_name_item': formset_name_item,
         'formset_stock': formset_stock,
@@ -55,8 +85,8 @@ def request_item(request):
 
     RequestItemFormNameItemSet = formset_factory(RequestItemFormNameItem)
 
-    if request.method == "POST":
-        stock = RequestItemFormStock(request.POST)
+    if request.method == 'POST':
+        stock = FormStock(request.POST)
         items = RequestItemFormNameItemSet(request.POST, prefix='name_item')
 
         if stock.is_valid() and items.is_valid():
@@ -103,18 +133,17 @@ def donation(request):
     if amount_items:
         if request.session.has_key('data_session'):
             id_stock = request.session['data_session']['stock']
-            formset_stock = DonationFormStock(initial={'stock': id_stock})
+            formset_stock = FormStock(initial={'stock': id_stock})
         else:
-            formset_stock = DonationFormStock()
+            formset_stock = FormStock()
 
     elif request.session.has_key('data_session'):
         id_stock = request.session['data_session']['stock']
-        formset_stock = DonationFormStock(initial={'stock': id_stock})
+        formset_stock = FormStock(initial={'stock': id_stock})
         amount_items = int(request.session['data_session']['amount_items'])
 
-
     DonationFormNameItemSet = formset_factory(DonationFormNameItem, extra=amount_items)
-    formset_name_item = DonationFormNameItemSet(prefix='name_item')
+    formset_name_item = DonationFormNameItemSet()
 
     stock = Stocks.objects.filter(id=id_stock)
     for i in stock:
@@ -122,7 +151,7 @@ def donation(request):
             disabled_button = True
 
     context = {
-        "amount_items": amount_items,
+        'amount_items': amount_items,
         'formset_stock': formset_stock,
         'formset_name_item': formset_name_item,
         'disabled_button': disabled_button,
@@ -136,17 +165,17 @@ def donation(request):
 def donation_item(request):
     DonationFormNameItemSet = formset_factory(DonationFormNameItem)
 
-    if request.method == "POST":
-        stock = DonationFormStock(request.POST)
-        items = DonationFormNameItemSet(request.POST, prefix='name_item')
-
+    if request.method == 'POST':
+        stock = FormStock(request.POST)
+        items = DonationFormNameItemSet(request.POST)
         if stock.is_valid() and items.is_valid():
             donation = Donation.objects.create()
 
-            for name_item in items.cleaned_data:
+            for item in items.cleaned_data:
                 DonationItem.objects.create(
                     **stock.cleaned_data,
-                    name_item=name_item.get('name_item'),
+                    name_item=item.get('name_item'),
+                    category=item.get('category'),
                     donation_id=donation.id)
 
     return render(request, 'fifo_lifo_templates/home_page.html')

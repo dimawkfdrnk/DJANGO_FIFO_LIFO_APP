@@ -3,14 +3,14 @@ from django import forms
 from .models import DonationItem, Stocks, RequestItem
 
 
-class DonationFormStock(forms.ModelForm):
+class FormStock(forms.ModelForm):
     
     class Meta:
         model = DonationItem
         fields = ['stock']
 
         widgets = {
-            "stock": forms.Select(attrs={"class": "form-control", "onChange": "form.submit();"} )
+            'stock': forms.Select(attrs={'class': 'form-control', 'onChange': 'form.submit();'} )
         }
 
 
@@ -18,21 +18,15 @@ class DonationFormNameItem(forms.ModelForm):
 
     class Meta:
         model = DonationItem
-        fields = ['name_item']
+        fields = ['category', 'name_item']
 
         widgets = {
-            "name_item": forms.TextInput(attrs={"class": "form-control"}),
+            'name_item': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            # "size": forms.Select(attrs={"class": "form-control"}),
+            # "gender": forms.Select(attrs={"class": "form-control"})
         }
 
-
-class RequestItemFormStock(forms.ModelForm):
-    class Meta:
-        model = RequestItem
-        fields = ['stock']
-
-        widgets = {
-            "stock": forms.Select(attrs={"class": "form-control", "onChange": "form.submit();"})
-        }
 
 class RequestItemFormNameItem(forms.ModelForm):
 
@@ -41,5 +35,18 @@ class RequestItemFormNameItem(forms.ModelForm):
         fields = ['name_item']
 
         widgets = {
-            "name_item": forms.TextInput(attrs={"class": "form-control"}),
+            'name_item': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class SearchItemForm(forms.ModelForm):
+
+    class Meta:
+        model = DonationItem
+        fields = ['name_item', 'category']
+
+        widgets = {
+            'name_item': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type': 'search'}),
+            'category': forms.Select(attrs={'class': 'form-control'})}

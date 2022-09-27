@@ -2,7 +2,14 @@
 {% block title %}
 home_page
 {% endblock %}
+{% block body_s %}
+{% endblock %}
 {% block body %}
+<form action="{% url 'search_for_item' %}" method="GET">
+    <div>
+        <button class="btn btn-link" type="submit" style="--bs-btn-padding-y: 1.50rem; --bs-btn-font-size: 1.50rem;">Искать вещь</button>
+    </div>
+</form>
 <div class="card" style="width: 30rem;">
     <div class="card-header">
         <h5>Регистрация прошения</h5>
@@ -38,3 +45,4 @@ home_page
     </div>
 </div>
 {% endblock %}
+
