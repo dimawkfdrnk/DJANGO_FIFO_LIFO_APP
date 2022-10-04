@@ -36,7 +36,7 @@ def search_for_item(request):
 
 
 def searching_results(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         results = DonationItem.objects.filter(name_item__icontains=request.POST['name_item'])
         results = results.filter(category=request.POST['category'])
         results = results.filter(stock=request.POST['stock'])
@@ -48,7 +48,7 @@ def searching_results(request):
 def help_request(request):
     id_stock = None
     amount_items = None
-    if request.method == 'POST':
+    if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
 
     if amount_items:
@@ -85,17 +85,18 @@ def request_item(request):
 
     RequestItemFormNameItemSet = formset_factory(RequestItemFormNameItem)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         stock = FormStock(request.POST)
         items = RequestItemFormNameItemSet(request.POST, prefix='name_item')
 
         if stock.is_valid() and items.is_valid():
             request_object = HelpRequest.objects.create()
 
-            for name_item in items.cleaned_data:
+            for item in items.cleaned_data:
                 request_item = RequestItem.objects.create(
                     **stock.cleaned_data,
-                    name_item=name_item.get('name_item'),
+                    name_item=item.get('name_item'),
+                    category=item.get('category'),
                     request_id=request_object.id
                 )
 
@@ -127,7 +128,7 @@ def donation(request):
     disabled_button = False
     id_stock = None
     amount_items = None
-    if request.method == 'POST':
+    if request.method == "POST":
         amount_items = int(request.POST['amount_items'])
 
     if amount_items:
@@ -165,7 +166,7 @@ def donation(request):
 def donation_item(request):
     DonationFormNameItemSet = formset_factory(DonationFormNameItem)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         stock = FormStock(request.POST)
         items = DonationFormNameItemSet(request.POST)
         if stock.is_valid() and items.is_valid():

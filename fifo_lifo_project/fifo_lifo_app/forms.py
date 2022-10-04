@@ -32,10 +32,11 @@ class RequestItemFormNameItem(forms.ModelForm):
 
     class Meta:
         model = RequestItem
-        fields = ['name_item']
+        fields = ['category', 'name_item']
 
         widgets = {
             'name_item': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
         }
 
 

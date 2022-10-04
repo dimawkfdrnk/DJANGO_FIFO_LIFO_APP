@@ -9,25 +9,19 @@ SELECT_A_PRODUCT_CATEGORY = [("Верхняя одежда", "Верхняя о�
 
 
 class Stocks(models.Model):
-    name_stock = models.CharField(max_length=30)
-    vacancies = models.IntegerField(null=True, default=10)
-    occupied_places = models.IntegerField(null=True, default=0)
+    name_stock = models.CharField(max_length=30, verbose_name="Склад")
+    vacancies = models.IntegerField(null=True, default=10, verbose_name="Количество мест")
+    occupied_places = models.IntegerField(null=True, default=0, verbose_name="Занятые места")
 
     class Meta:
+        verbose_name = 'cклад'
+        verbose_name_plural = 'Склады'
         constraints = [
             models.CheckConstraint(check=models.Q(vacancies__gte=F('occupied_places')), name='occupied_places_gte')
         ]
 
     def __str__(self):
         return self.name_stock
-
-
-class HelpRequest(models.Model):
-    status = models.CharField(max_length=15, choices=(("Open", "Open"), ("Close", "Close")), default="Open")
-
-
-class Donation(models.Model):
-    pass
 
 
 class ItemDescription(models.Model):
@@ -41,14 +35,60 @@ class ItemDescription(models.Model):
         abstract = True
 
 
-class DonationItem(ItemDescription):
-    donation = models.ForeignKey(Donation, on_delete=models.CASCADE, null=True)
-    status = models.CharField(max_length=15, choices=(("Free", "Free"), ("Issued", "Issued")), default="Free")
+class HelpRequest(models.Model):
+    status = models.CharField(
+        max_length=15,
+        choices=(("Open", "Open"), ("Close", "Close")),
+        default="Open",
+        verbose_name="Статус"
+    )
+
+    def __str__(self):
+        return self.status
+
+    class Meta:
+        verbose_name = 'запрос помощи'
+        verbose_name_plural = 'Запросы помощи'
 
 
 class RequestItem(ItemDescription):
-    request = models.ForeignKey(HelpRequest, on_delete=models.CASCADE, null=True)
-    status = models.CharField(max_length=15, choices=(("Open", "Open"), ("Close", "Close")), default="Open")
+    request = models.ForeignKey(HelpRequest, on_delete=models.CASCADE, null=True, verbose_name="Номер прошения")
+    status = models.CharField(
+        max_length=15,
+        choices=(("Open", "Open"), ("Close", "Close")),
+        default="Open",
+        verbose_name="Статус"
+    )
+    class Meta:
+        verbose_name = 'запрошеная вещь'
+        verbose_name_plural = 'Запрошенные вещи'
+
+
+class Donation(models.Model):
+
+    class Meta:
+        verbose_name = 'пожертвование'
+        verbose_name_plural = 'Пожертвования'
+
+    # def __str__(self):
+    #     return self.id
+
+
+class DonationItem(ItemDescription):
+    donation = models.ForeignKey(Donation, on_delete=models.CASCADE, null=True, verbose_name="Номер пожертвования")
+    status = models.CharField(
+        max_length=15,
+        choices=(("Free", "Free"), ("Issued", "Issued")),
+        default="Free",
+        verbose_name="Статус"
+    )
+
+    class Meta:
+        verbose_name = 'вещь которую пожертвовали'
+        verbose_name_plural = 'Вещи которые пожертвовали'
+
+    def __str__(self):
+        return self.name_item
 
 
 class ManagerHelpRequest(models.Manager):
@@ -59,6 +99,8 @@ class ManagerHelpRequest(models.Manager):
 class CompletedRequest(HelpRequest):
     class Meta:
         proxy = True
+        verbose_name = 'завершенный запрос'
+        verbose_name_plural = 'Завершенные запросы'
 
     object = ManagerHelpRequest()
 
